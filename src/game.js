@@ -10,9 +10,25 @@ function ac() {
   if (!audioCtx) {
     try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch { audioCtx = null; }
   }
-  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  // Android WebView often leaves the context "suspended": force-resume on every call.
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   return audioCtx;
 }
+// Mobile browsers only unlock audio inside a real user gesture — unlock early.
+window.addEventListener('pointerdown', () => ac(), { once: false, passive: true });
+
+// simple background music loop
+let musicTimer = null;
+let noteIdx = 0;
+const MUSIC = [262, 330, 392, 330, 440, 392, 330, 262, 294, 349, 440, 349, 523, 440, 349, 294];
+function startMusic() {
+  stopMusic();
+  musicTimer = setInterval(() => {
+    if (!muted && !document.hidden) beep(MUSIC[noteIdx++ % MUSIC.length], 0.22, 'sine', 0.05);
+  }, 240);
+}
+function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
+
 function beep(freq, dur = 0.08, type = 'square', vol = 0.15) {
   if (muted) return;
   const ctx = ac(); if (!ctx) return;
@@ -109,15 +125,17 @@ export class Game {
 
   start() {
     ac(); this.reset(); this.state = 'playing'; this.renderUI();
+    startMusic();
     beep(440, 0.1, 'sine', 0.2);
   }
   setPaused(p) {
-    if (p && this.state === 'playing') { this.state = 'paused'; this.renderUI(); }
-    else if (!p && this.state === 'paused') { this.state = 'playing'; this.renderUI(); }
+    if (p && this.state === 'playing') { this.state = 'paused'; this.renderUI(); stopMusic(); }
+    else if (!p && this.state === 'paused') { this.state = 'playing'; this.renderUI(); startMusic(); }
   }
   gameOver() {
     this.state = 'over';
     this.shake = 14;
+    stopMusic();
     if (navigator.vibrate) navigator.vibrate(120);
     beep(160, 0.3, 'sawtooth', 0.2);
     if (this.score > this.best) {
