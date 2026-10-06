@@ -1,0 +1,22 @@
+{
+  "name": "ultapulta",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sync:cap": "node scripts/sync-capacitor-name.mjs && npx cap sync",
+    "build:android": "npm run build && npm run sync:cap",
+    "cap:add": "npx cap add android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
+    "vite": "^7.0.0"
+  }
+}

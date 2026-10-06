@@ -1,0 +1,9 @@
+{
+  "appId": "com.neuroseek.ultapulta",
+  "appName": "UltaPulta",
+  "webDir": "dist",
+  "backgroundColor": "#0a0e1a",
+  "android": {
+    "allowMixedContent": false
+  }
+}

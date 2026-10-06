@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">UltaPulta</string>
+    <string name="title_activity_main">UltaPulta</string>
+    <string name="package_name">com.neuroseek.ultapulta</string>
+    <string name="custom_url_scheme">com.neuroseek.ultapulta</string>
+</resources>
